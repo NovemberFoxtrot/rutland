@@ -29,24 +29,9 @@ var (
 	outputfile = flag.String("output", "", "blue percentage")
 )
 
-func main() {
-	flag.Parse()
-
-	file, err := os.Open(*inputfile)
-	checkerror(err)
-
-	tofile, err := os.Create(*outputfile)
-	checkerror(err)
-
-	defer file.Close()
-	defer tofile.Close()
-
-	m, _, err := image.Decode(file)
-
+func colour(m image.Image) image.Image {
 	bounds := m.Bounds()
-
 	rm := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
-
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			r, g, b, a := m.At(x, y).RGBA()
@@ -70,6 +55,24 @@ func main() {
 			rm.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
 		}
 	}
+	return rm
+}
+
+func main() {
+	flag.Parse()
+
+	file, err := os.Open(*inputfile)
+	checkerror(err)
+
+	tofile, err := os.Create(*outputfile)
+	checkerror(err)
+
+	defer file.Close()
+	defer tofile.Close()
+
+	m, _, err := image.Decode(file)
+
+	rm := colour(m)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
