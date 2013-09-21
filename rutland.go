@@ -40,13 +40,14 @@ func mini(m image.Image) image.Image {
 
 			r1, g1, b1, _ := m.At(x, y-1).RGBA()
 			r2, g2, b2, _ := m.At(x-1, y).RGBA()
-			r3, g3, b3, _ := m.At(x+1, y+1).RGBA()
+			r3, g3, b3, _ := m.At(x+1, y).RGBA()
+			r4, g4, b4, _ := m.At(x, y+1).RGBA()
 
-			r0 := (r1 + r2 + r3 + (2 * r)) / 6.0
-			g0 := (g1 + g2 + g3 + (2 * g)) / 6.0
-			b0 := (b1 + b2 + b3 + (2 * b)) / 6.0
+			r0 := (r1 + r2 + r3 + r4 + (2.0 * r)) / 6.0
+			g0 := (g1 + g2 + g3 + g4 + (2.0 * g)) / 6.0
+			b0 := (b1 + b2 + b3 + b4 + (2.0 * b)) / 6.0
 
-			target.Set(x, y, color.RGBA{uint8(r0), uint8(g0), uint8(b0), uint8(a)})
+			target.Set(x, y, color.RGBA{uint8(r0/255), uint8(g0/255), uint8(b0/255), uint8(a/255)})
 		}
 	}
 
