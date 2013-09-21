@@ -29,32 +29,51 @@ var (
 	outputfile = flag.String("output", "", "blue percentage")
 )
 
+func mini(m image.Image) image.Image {
+	bounds := m.Bounds()
+
+	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
+
+	for y := bounds.Min.Y + 1; y < bounds.Max.Y-1; y++ {
+		for x := bounds.Min.X + 1; x < bounds.Max.X-1; x++ {
+			r, g, b, a := m.At(x, y).RGBA()
+
+			r1, g1, b1, _ := m.At(x, y-1).RGBA()
+			r2, g2, b2, _ := m.At(x-1, y).RGBA()
+			r3, g3, b3, _ := m.At(x+1, y+1).RGBA()
+
+			r0 := (r1 + r2 + r3 + (2 * r)) / 6.0
+			g0 := (g1 + g2 + g3 + (2 * g)) / 6.0
+			b0 := (b1 + b2 + b3 + (2 * b)) / 6.0
+
+			target.Set(x, y, color.RGBA{uint8(r0), uint8(g0), uint8(b0), uint8(a)})
+		}
+	}
+
+	return target
+}
+
 func colour(m image.Image) image.Image {
 	bounds := m.Bounds()
+
 	rm := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
+
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			r, g, b, a := m.At(x, y).RGBA()
 
-			if *red < 0 {
-				r = invertcolor(r, a)
-			}
+			r = invertcolor(r, a)
+			g = invertcolor(g, a)
+			b = invertcolor(b, a)
 
-			if *green < 0 {
-				g = invertcolor(g, a)
-			}
-
-			if *blue < 0 {
-				b = invertcolor(b, a)
-			}
-
-			r = r * uint32(*red)
-			g = g * uint32(*green)
-			b = b * uint32(*blue)
+			//r = r * uint32(*red)
+			//g = g * uint32(*green)
+			//b = b * uint32(*blue)
 
 			rm.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
 		}
 	}
+
 	return rm
 }
 
@@ -72,7 +91,8 @@ func main() {
 
 	m, _, err := image.Decode(file)
 
-	rm := colour(m)
+	// rm := colour(m)
+	rm := mini(m)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
