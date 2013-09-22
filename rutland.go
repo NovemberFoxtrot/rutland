@@ -58,7 +58,7 @@ func outline(source image.Image) image.Image {
 
 				r, g, b, a := source.At(xx, yy).RGBA()
 
-				target.Set(xx, yy, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
+				target.Set(x, y, color.RGBA{uint8(r / 255), uint8(g / 255), uint8(b / 255), uint8(a / 255)})
 			} else {
 				r, g, b, a := source.At(x, y).RGBA()
 				target.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
@@ -69,7 +69,15 @@ func outline(source image.Image) image.Image {
 	return target
 }
 
-func mini(m image.Image) image.Image {
+func mini(source image.Image) image.Image {
+	bounds := source.Bounds()
+
+	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
+
+	return target
+}
+
+func smooth(m image.Image) image.Image {
 	bounds := m.Bounds()
 
 	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
@@ -133,8 +141,8 @@ func main() {
 	m, _, err := image.Decode(file)
 
 	// rm := colour(m)
-	rm := mini(m)
-	rm = outline(m)
+	rm := smooth(m)
+	rm = outline(rm)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
