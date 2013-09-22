@@ -29,6 +29,46 @@ var (
 	outputfile = flag.String("output", "", "blue percentage")
 )
 
+func outline(source image.Image) image.Image {
+	bounds := source.Bounds()
+
+	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			if (x == bounds.Min.X) || (x == bounds.Max.X-1) || (y == bounds.Min.Y) || (y == bounds.Max.Y-1) {
+				var xx int
+				var yy int
+
+				if x == bounds.Min.X {
+					xx = 1
+				}
+
+				if x == bounds.Max.X-1 {
+					xx = bounds.Max.X - 2
+				}
+
+				if y == bounds.Min.Y {
+					yy = 1
+				}
+
+				if y == bounds.Max.Y-1 {
+					yy = bounds.Max.Y - 2
+				}
+
+				r, g, b, a := source.At(xx, yy).RGBA()
+
+				target.Set(xx, yy, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
+			} else {
+				r, g, b, a := source.At(x, y).RGBA()
+				target.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
+			}
+		}
+	}
+
+	return target
+}
+
 func mini(m image.Image) image.Image {
 	bounds := m.Bounds()
 
@@ -47,7 +87,7 @@ func mini(m image.Image) image.Image {
 			g0 := (g1 + g2 + g3 + g4 + (2.0 * g)) / 6.0
 			b0 := (b1 + b2 + b3 + b4 + (2.0 * b)) / 6.0
 
-			target.Set(x, y, color.RGBA{uint8(r0/255), uint8(g0/255), uint8(b0/255), uint8(a/255)})
+			target.Set(x, y, color.RGBA{uint8(r0 / 255), uint8(g0 / 255), uint8(b0 / 255), uint8(a / 255)})
 		}
 	}
 
@@ -94,6 +134,7 @@ func main() {
 
 	// rm := colour(m)
 	rm := mini(m)
+	rm = outline(m)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
