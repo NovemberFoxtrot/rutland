@@ -75,18 +75,25 @@ func mini(source image.Image) image.Image {
 	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
 
 	yboundary := float64(bounds.Max.Y / 3.0)
+	y3 := float64(bounds.Max.Y / 2.0 * 3.0)
 	h := float64(bounds.Max.Y)
 	times := 30.0
 
 	for y := bounds.Min.Y + 1; y < bounds.Max.Y-1; y++ {
 		for x := bounds.Min.X + 1; x < bounds.Max.X-1; x++ {
+			r, g, b, _ := source.At(x, y).RGBA()
+
 			var num float64
 
 			if float64(y) < yboundary {
 				num = 9.0 * times / h / h * (float64(y) - yboundary) * (float64(y) - yboundary)
-			}	
+			} else if float64(y) < y3 {
+				num = 0.0
+			} else {
+				num = 9.0 * times / h / h * (float64(y) - y3) * (float64(y) - y3)
+			}
 
-			log.Println(num)
+			target.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(num)})
 		}
 	}
 
@@ -159,6 +166,7 @@ func main() {
 	// rm := colour(m)
 	rm := smooth(m)
 	rm = outline(rm)
+	rm = mini(rm)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
