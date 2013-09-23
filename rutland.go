@@ -74,6 +74,22 @@ func mini(source image.Image) image.Image {
 
 	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
 
+	yboundary := float64(bounds.Max.Y / 3.0)
+	h := float64(bounds.Max.Y)
+	times := 30.0
+
+	for y := bounds.Min.Y + 1; y < bounds.Max.Y-1; y++ {
+		for x := bounds.Min.X + 1; x < bounds.Max.X-1; x++ {
+			var num float64
+
+			if float64(y) < yboundary {
+				num = 9.0 * times / h / h * (float64(y) - yboundary) * (float64(y) - yboundary)
+			}	
+
+			log.Println(num)
+		}
+	}
+
 	return target
 }
 
