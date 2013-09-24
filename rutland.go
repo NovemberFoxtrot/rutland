@@ -34,35 +34,26 @@ func outline(source image.Image) image.Image {
 
 	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
 
-	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			if (x == bounds.Min.X) || (x == bounds.Max.X-1) || (y == bounds.Min.Y) || (y == bounds.Max.Y-1) {
-				var xx int
-				var yy int
+	for y := bounds.Min.Y; y <= bounds.Max.Y; y++ {
+		r, g, b, a := source.At(bounds.Min.X+1, y).RGBA()
+		target.Set(bounds.Min.X, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
 
-				if x == bounds.Min.X {
-					xx = 1
-				}
+		r, g, b, a = source.At(bounds.Max.X-1, y).RGBA()
+		target.Set(bounds.Max.X, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
+	}
 
-				if x == bounds.Max.X-1 {
-					xx = bounds.Max.X - 2
-				}
+	for x := bounds.Min.X + 1; x < bounds.Max.X; x++ {
+		r, g, b, a := source.At(x, bounds.Min.Y+1).RGBA()
+		target.Set(x, bounds.Min.Y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
 
-				if y == bounds.Min.Y {
-					yy = 1
-				}
+		r, g, b, a = source.At(x, bounds.Max.Y-1).RGBA()
+		target.Set(x, bounds.Max.Y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
+	}
 
-				if y == bounds.Max.Y-1 {
-					yy = bounds.Max.Y - 2
-				}
-
-				r, g, b, a := source.At(xx, yy).RGBA()
-
-				target.Set(x, y, color.RGBA{uint8(r / 255), uint8(g / 255), uint8(b / 255), uint8(a / 255)})
-			} else {
-				r, g, b, a := source.At(x, y).RGBA()
-				target.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
-			}
+	for y := bounds.Min.Y + 1; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X + 1; x < bounds.Max.X; x++ {
+			r, g, b, a := source.At(x, y).RGBA()
+			target.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
 		}
 	}
 
@@ -105,8 +96,8 @@ func smooth(m image.Image) image.Image {
 
 	target := image.NewRGBA(image.Rect(bounds.Min.Y, bounds.Min.X, bounds.Max.X, bounds.Max.Y))
 
-	for y := bounds.Min.Y + 1; y < bounds.Max.Y-1; y++ {
-		for x := bounds.Min.X + 1; x < bounds.Max.X-1; x++ {
+	for y := bounds.Min.Y + 1; y <= bounds.Max.Y-1; y++ {
+		for x := bounds.Min.X + 1; x <= bounds.Max.X-1; x++ {
 			r, g, b, a := m.At(x, y).RGBA()
 
 			r1, g1, b1, _ := m.At(x, y-1).RGBA()
@@ -118,7 +109,7 @@ func smooth(m image.Image) image.Image {
 			g0 := (g1 + g2 + g3 + g4 + (2.0 * g)) / 6.0
 			b0 := (b1 + b2 + b3 + b4 + (2.0 * b)) / 6.0
 
-			target.Set(x, y, color.RGBA{uint8(r0 / 255), uint8(g0 / 255), uint8(b0 / 255), uint8(a / 255)})
+			target.Set(x, y, color.RGBA{uint8(r0 / 256), uint8(g0 / 256), uint8(b0 / 256), uint8(a / 256)})
 		}
 	}
 
@@ -166,7 +157,7 @@ func main() {
 	// rm := colour(m)
 	rm := smooth(m)
 	rm = outline(rm)
-	rm = mini(rm)
+	// rm = mini(rm)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
