@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/nfnt/resize"
 	"image"
 	"image/color"
 	_ "image/gif"
@@ -155,9 +156,11 @@ func main() {
 	m, _, err := image.Decode(file)
 
 	// rm := colour(m)
-	rm := smooth(m)
-	rm = outline(rm)
+	// rm := smooth(m)
+	// rm = outline(rm)
 	// rm = mini(rm)
+
+	rm := resize.Resize(250, 250, m, resize.Lanczos3)
 
 	jpeg.Encode(tofile, rm, &jpeg.Options{jpeg.DefaultQuality})
 }
