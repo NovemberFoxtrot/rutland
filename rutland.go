@@ -29,7 +29,7 @@ var (
 	inputfile  = flag.String("input", "", "blue percentage")
 	outputfile = flag.String("output", "", "blue percentage")
 	width      = flag.Int("width", 100, "new width")
-	height     = flag.Int("height", 100, "new height")
+	height     = flag.Int("height", 0, "new height")
 )
 
 func outline(source image.Image) image.Image {
@@ -160,6 +160,15 @@ func main() {
 	// theImage = smooth(theImage)
 	// theImage = outline(theImage)
 	// theImage = mini(theImage)
+
+	bounds := theImage.Bounds()
+	aspect := float64(bounds.Max.Y-bounds.Min.Y) / float64(bounds.Max.X-bounds.Min.X)
+
+	log.Println(aspect)
+
+	if *height == 0 {
+		*height = int(float64(*width) * aspect)
+	}
 
 	theImage = resize.Resize(uint(*width), uint(*height), theImage, resize.Lanczos3Lut)
 
