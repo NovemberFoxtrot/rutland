@@ -28,8 +28,8 @@ var (
 	blue       = flag.Int("blue", 0, "blue percentage")
 	inputfile  = flag.String("input", "", "blue percentage")
 	outputfile = flag.String("output", "", "blue percentage")
-	width = flag.Int("width", 100, "new width")
-	height = flag.Int("height", 100, "new height")
+	width      = flag.Int("width", 100, "new width")
+	height     = flag.Int("height", 100, "new height")
 )
 
 func outline(source image.Image) image.Image {
@@ -147,13 +147,12 @@ func main() {
 	flag.Parse()
 
 	file, err := os.Open(*inputfile)
+	defer file.Close()
 	checkerror(err)
 
 	tofile, err := os.Create(*outputfile)
-	checkerror(err)
-
-	defer file.Close()
 	defer tofile.Close()
+	checkerror(err)
 
 	theImage, _, err := image.Decode(file)
 
@@ -162,7 +161,7 @@ func main() {
 	// theImage = outline(theImage)
 	// theImage = mini(theImage)
 
-	theImage = resize.Resize(uint(*width), uint(*height), theImage, resize.Lanczos3)
+	theImage = resize.Resize(uint(*width), uint(*height), theImage, resize.Lanczos3Lut)
 
 	jpeg.Encode(tofile, theImage, &jpeg.Options{jpeg.DefaultQuality})
 }
