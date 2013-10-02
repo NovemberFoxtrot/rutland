@@ -168,6 +168,8 @@ func main() {
 
 	if *height == 0 {
 		*height = int(float64(*width) * aspect)
+	} else if *width == 0 {
+		*width = int(float64(*height) * aspect)
 	}
 
 	theImage = resize.Resize(uint(*width), uint(*height), theImage, resize.Lanczos3Lut)
