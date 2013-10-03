@@ -164,8 +164,6 @@ func main() {
 	bounds := theImage.Bounds()
 	aspect := float64(bounds.Max.Y-bounds.Min.Y) / float64(bounds.Max.X-bounds.Min.X)
 
-	log.Println(aspect)
-
 	if *height == 0 {
 		*height = int(float64(*width) * aspect)
 	} else if *width == 0 {
