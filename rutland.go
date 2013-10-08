@@ -14,7 +14,7 @@ import (
 
 func checkerror(err error) {
 	if err != nil {
-		log.Fatalln("[ERROR]", err)
+		log.Fatalln("[error]", err)
 	}
 }
 
