@@ -14,7 +14,7 @@ import (
 
 func checkerror(err error) {
 	if err != nil {
-		log.Fatalln("[ERROR]", err)
+		log.Fatalln("[error]", err)
 	}
 }
 
@@ -26,8 +26,8 @@ var (
 	red        = flag.Int("red", 0, "red percentage")
 	green      = flag.Int("green", 0, "green percentage")
 	blue       = flag.Int("blue", 0, "blue percentage")
-	inputfile  = flag.String("input", "", "blue percentage")
-	outputfile = flag.String("output", "", "blue percentage")
+	inputfile  = flag.String("input", "", "input file")
+	outputfile = flag.String("output", "", "output file")
 	width      = flag.Int("width", 100, "new width")
 	height     = flag.Int("height", 0, "new height")
 )
